@@ -17,7 +17,7 @@ export function exitNode() {
   currentParent = currentParent.parentNode;
 }
 
-const matches = function(matchNode, name) {
+const matches = function (matchNode, name) {
   const data = getData(matchNode);
   return name === data.name;
 };
@@ -46,6 +46,16 @@ export function elementOpen(name) {
 }
 
 export function elementClose(node) {
+  let unvisitedNode = currentNode
+    ? currentNode.nextSibling
+    : currentParent.firstChild;
+
+  while (unvisitedNode) {
+    const next = unvisitedNode.nextSibling;
+    currentParent.removeChild(unvisitedNode);
+    unvisitedNode = next;
+  }
+
   exitNode();
   return currentNode;
 }
@@ -86,4 +96,3 @@ export function patch(node, fn, data) {
   fn(data);
   exitNode();
 }
-
