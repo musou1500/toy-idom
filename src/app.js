@@ -1,38 +1,43 @@
-import {elementOpen, elementClose, text, patch} from './idom.js';
+import { elementOpen, elementClose, text, patch } from "./idom.js";
 
 function render(data) {
-  elementOpen('ul');
+  elementOpen("div");
   {
-    for (let task of data.tasks) {
-      elementOpen('li');
+    elementOpen("input");
+    elementClose("input");
+  }
+  elementClose("div");
+  elementOpen("ul");
+  {
+    for (let i = 0; i < data.amount; i++) {
+      elementOpen("li");
       {
-        elementOpen('span');
+        elementOpen("span");
         {
-          text(task);
+          text(i.toString());
         }
-        elementClose('span');
+        elementClose("span");
       }
-      elementClose('li');
+      elementClose("li");
     }
   }
-  elementClose('ul');
+  elementClose("ul");
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('button').addEventListener('click', () => {
-    data.tasks.push(data.name);
-    patch(document.body, render, data);
-  });
-
-  document.querySelector('input').addEventListener('input', e => {
-    data.name = e.target.value;
-    patch(document.body, render, data);
-  });
-
+document.addEventListener("DOMContentLoaded", () => {
   const data = {
-    name: '',
-    tasks: []
+    amount: 0,
   };
 
   patch(document.body, render, data);
+
+  document.querySelector("input").addEventListener("input", (e) => {
+    const amount = parseInt(e.target.value);
+    if (isNaN(amount)) {
+      return;
+    }
+
+    data.amount = amount;
+    patch(document.body, render, data);
+  });
 });
