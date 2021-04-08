@@ -1,37 +1,42 @@
-import { elementOpen, elementClose, text, patch } from "./idom.js";
+import {elementOpen, elementClose, text, patch} from './idom.js';
 
 function render(data) {
-  elementOpen("div");
+  elementOpen('div');
   {
-    elementOpen("input");
-    elementClose("input");
+    elementOpen('input');
+    elementClose('input');
   }
-  elementClose("div");
-  elementOpen("ul");
+  elementClose('div');
+  elementOpen('p');
+  {
+    text(`given number is ${data.amount}`);
+  }
+  elementClose('p');
+  elementOpen('ul');
   {
     for (let i = 0; i < data.amount; i++) {
-      elementOpen("li");
+      elementOpen('li');
       {
-        elementOpen("span");
+        elementOpen('span');
         {
           text(i.toString());
         }
-        elementClose("span");
+        elementClose('span');
       }
-      elementClose("li");
+      elementClose('li');
     }
   }
-  elementClose("ul");
+  elementClose('ul');
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   const data = {
     amount: 0,
   };
 
   patch(document.body, render, data);
 
-  document.querySelector("input").addEventListener("input", (e) => {
+  document.querySelector('input').addEventListener('input', e => {
     const amount = parseInt(e.target.value);
     if (isNaN(amount)) {
       return;
