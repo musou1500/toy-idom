@@ -1,5 +1,6 @@
 let currentNode = null;
 let currentParent = null;
+let attrBuilder = new Map();
 
 function enterNode() {
   currentParent = currentNode;
@@ -37,11 +38,39 @@ function renderDOM(name) {
   return node;
 }
 
-export function elementOpen(name) {
-  nextNode();
-  const node = renderDOM(name);
-  enterNode();
+export function elementOpen(name, attrs) {
+  elementOpenStart(name);
+  attrBuilder = new Map(attrs);
+  elementOpenEnd(name);
+}
 
+export function elementOpenStart(name) {
+  nextNode();
+  renderDOM(name);
+}
+
+export function elementOpenEnd() {
+  const data = getData(currentNode);
+  // diff attrs
+  // clean old attrs
+  const prevAttrs = data.attrs;
+  for (const [key] of prevAttrs) {
+    if (!attrBuilder.has(key)) {
+      currentNode[key] = undefined;
+      data.attrs.delete(key);
+    }
+  }
+
+  // set new attrs
+  for (const [key, value] of attrBuilder) {
+    if (!data.attrs.has(key) || data.attrs.get(key) !== value) {
+      currentNode[key] = value;
+      data.attrs.set(key, value);
+    }
+  }
+
+  attrBuilder = new Map();
+  enterNode();
   return currentParent;
 }
 
@@ -79,6 +108,7 @@ class NodeData {
   constructor(name) {
     this.name = name;
     this.text = null;
+    this.attrs = new Map();
   }
 }
 
@@ -90,9 +120,9 @@ function getData(node) {
   return node[NODE_DATA_KEY];
 }
 
-export function patch(node, fn, data) {
+export function patch(node, fn) {
   currentNode = node;
   enterNode();
-  fn(data);
+  fn();
   exitNode();
 }
